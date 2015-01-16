@@ -57,7 +57,8 @@ if( function_exists('acf_add_options_page') ) {
 }
 
 function cap_tweet_highlight_script() {
-    if (get_option('options_cap_tweet_highlight_username')) {
+    // Only call cap-tweet-highlight if a twitter username is set and were on a single post page.
+    if ( get_option('options_cap_tweet_highlight_username') && is_singular() ) {
         $handle = 'jquery';
         $list = 'enqueued';
         if (wp_script_is( $handle, $list )) {
@@ -74,7 +75,7 @@ add_action( 'wp_enqueue_scripts', 'cap_tweet_highlight_script' );
 function cap_tweet_highlight_callback() {
     // Get site twitter name through options table
     $twitter_username = get_option('options_cap_tweet_highlight_username');
-    if (!empty($twitter_username)) {
+    if ( !empty($twitter_username) && is_singular() ) {
         echo '
         <script>
         jQuery(document).ready(function(){
@@ -96,7 +97,7 @@ function cap_tweet_highlight_shortcode( $atts , $content = null ) {
 add_shortcode( 'tweet-text', 'cap_tweet_highlight_shortcode' );
 
 function cap_tweet_highlight_style() {
-    if (get_option('options_cap_tweet_highlight_username')){
+    if ( get_option('options_cap_tweet_highlight_username') && is_singular() ){
     ?>
     <style>
     ::selection {
