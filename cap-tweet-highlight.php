@@ -1,154 +1,93 @@
 <?php
 /**
-* Plugin Name: CAP Tweet Highlighter
+* Plugin Name: CAP Social Highlighter
 * Description: Select content and tweet it out
 * Version: 1.0
 * Author: Seth Rubenstein for Center for American Progress
 * Author URI: http://sethrubenstein.info
 * License: GPL2
 */
-if( function_exists('register_field_group') ) {
-    register_field_group(array (
-        'key' => 'group_54b6b016f34a1',
-        'title' => 'CAP Tweet Highlighter',
-        'fields' => array (
-            array (
-                'key' => 'field_54b6b020fadc5',
-                'label' => 'Twitter Username',
-                'name' => 'cap_tweet_highlight_username',
-                'prefix' => '',
-                'type' => 'text',
-                'instructions' => '',
-                'required' => 0,
-                'conditional_logic' => 0,
-                'wrapper' => array (
-                    'width' => '',
-                    'class' => '',
-                    'id' => '',
-                ),
-                'default_value' => '',
-                'placeholder' => '',
-                'prepend' => '',
-                'append' => '',
-                'maxlength' => '',
-                'readonly' => 0,
-                'disabled' => 0,
-            ),
-        ),
-        'location' => array (
-            array (
-                array (
-                'param' => 'options_page',
-                'operator' => '==',
-                'value' => 'acf-options',
-                ),
-            ),
-        ),
-        'menu_order' => 0,
-        'position' => 'normal',
-        'style' => 'default',
-        'label_placement' => 'top',
-        'instruction_placement' => 'label',
-        'hide_on_screen' => '',
-    ));
-}
-if( function_exists('acf_add_options_page') ) {
-    acf_add_options_page();
-}
-
 function cap_tweet_highlight_script() {
-    // Only call cap-tweet-highlight if a twitter username is set and were on a single post page.
-    if ( get_option('options_cap_tweet_highlight_username') && is_singular() ) {
+    // // Only call cap-tweet-highlight if a twitter username is set and were on a single post page.
+    if ( is_singular() ) {
         $handle = 'jquery';
         $list = 'enqueued';
-        if (wp_script_is( $handle, $list )) {
-            return;
-        } else {
+        if (!wp_script_is( $handle, $list )) {
             wp_enqueue_script( 'jquery' );
-            wp_register_script( 'cap-tweet-highlight', plugin_dir_url(__FILE__).'tweet-highlighter.js');
-            wp_enqueue_script( 'cap-tweet-highlight' );
         }
+        wp_enqueue_style( 'cap-social-sharer', plugin_dir_url(__FILE__).'css/social-sharer.css');
+
+        wp_register_script( 'cap-social-sharer', plugin_dir_url(__FILE__).'js/min/cap-social-sharer.min.js');
+        wp_enqueue_script( 'cap-social-sharer' );
     }
 }
 add_action( 'wp_enqueue_scripts', 'cap_tweet_highlight_script' );
 
-function cap_tweet_highlight_callback() {
-    // Get site twitter name through options table
-    $twitter_username = get_option('options_cap_tweet_highlight_username');
-    if ( !empty($twitter_username) && is_singular() ) {
-        echo '
+function cap_selection_share_callback() {
+    if ( is_singular() ) {
+        ?>
+        <span id="share-selection"><i class="mdi mdi-twitter"></i> <i class="mdi mdi-facebook"></i></span>
         <script>
         jQuery(document).ready(function(){
-            jQuery("p, .tweetable").tweettext("'.$twitter_username.'");
+            appId = jQuery('meta[property="fb:app_id"]').attr("content") || jQuery('meta[property="fb:app_id"]').attr("value");
+            url2share = jQuery('meta[property="og:url"]').attr("content") || jQuery('meta[property="og:url"]').attr("value") || window.location.href;
+
+            smart_truncate = function(str, n){
+                if (!str || !str.length) return str;
+                var toLong = str.length>n,
+                    s_ = toLong ? str.substr(0,n-1) : str;
+                s_ = toLong ? s_.substr(0,s_.lastIndexOf(' ')) : s_;
+                return  toLong ? s_ +'...' : s_;
+            };
+
+            jQuery(".entry-content p:not(.wide-paragraph)").selectionSharer();
+
+            jQuery("#share-selection").appendTo("blockquote p, .shareable-text");
+            jQuery("blockquote p, .shareable-text").each(function(){
+
+                jQuery(this).find(".mdi-twitter").click(function() {
+
+                    var text = "“"+smart_truncate(jQuery(this).closest("p").text(), 114)+"”";
+                    var url = 'http://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&related='+self.relatedTwitterAccounts+'&url='+encodeURIComponent(window.location.href);
+
+                    var w = 640, h=440;
+                    var left = (screen.width/2)-(w/2);
+                    var top = (screen.height/2)-(h/2)-100;
+                    window.open(url, "share_twitter", 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
+                });
+
+                jQuery(this).find(".mdi-facebook").click(function() {
+
+                    var text = jQuery(this).closest("p").text();
+                    var url = 'https://www.facebook.com/dialog/feed?app_id='+appId+'&display=page&name='+encodeURIComponent(text)+'&link='+encodeURIComponent(url2share)+'&redirect_uri='+encodeURIComponent(url2share);
+
+                    var w = 640, h=440;
+                    var left = (screen.width/2)-(w/2);
+                    var top = (screen.height/2)-(h/2)-100;
+                    window.open(url, "share_facebook", 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
+                });
+
+            });
+
+            jQuery("#lasso--edit").click(function(){
+                jQuery(".entry-content p").each(function(){
+                    if ( jQuery(this).hasClass( "selectionShareable" ) ) {
+                        jQuery(this).removeAttr("class");
+                    }
+                });
+            });
         });
         </script>
-        ';
+        <?php
     }
 }
-add_action('wp_head','cap_tweet_highlight_callback');
+add_action('wp_footer','cap_selection_share_callback', 500);
 
 function cap_tweet_highlight_shortcode( $atts , $content = null ) {
     // Use shortcode [tweet-text]Your text here[/tweet-text]
-    $markup = '<span class="tweetable">';
+    $markup = '<span class="shareable-text">';
     $markup .= $content;
     $markup .= '</span>';
     return $markup;
 }
 add_shortcode( 'tweet-text', 'cap_tweet_highlight_shortcode' );
-
-function cap_tweet_highlight_style() {
-    if ( get_option('options_cap_tweet_highlight_username') && is_singular() ){
-    ?>
-    <style>
-    ::selection {
-        background-color: rgba(0, 172, 237, 0.7);
-        color: #fff;
-    }
-    /*Twitter Icon*/
-    #tweettext, .tweetable:hover:after {
-        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAMAAABFjsb+AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAADPUExURQAAAP///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////6iInkcAAABEdFJOUwCrQN3DyOERBQSEjMrCAq02omMKD1eFqUf2A/S6/SRpkEtGmPdd1M3H6vlehxSaMf4WNOvQC1MuiCMnVQcr5K/8P8W1IZj2+gAAAJVJREFUGBmdwUUCglAABNBBREDA7u7u7pz7n0ngG7hx4Xv4Q6RSb+rQhggZGoRUkaR/0Fax43kJR4auntHHkZR9sKUpKCr0E8lOuZQrUFCBw/5CRzZPVwPANjCnlwwgtOCXKGzjLr2ScNQUfgQ0OIL0iMGljyZ8CeNlbVHwJyBMVxYFKQ6Xz+RTq4q3a/Bu3qTNDL88AM/nLQA4tvI4AAAAAElFTkSuQmCC');
-    }
-    #tweettext:hover, .tweetable:after {
-        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAMAAABFjsb+AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAADPUExURQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJljpgQAAABEdFJOUwCr3UDDyOERBQSEjMrCAgoPV602omMkhalH9gP0uv1pkEtGmPdd1BTNx+r5XoeaMf4WNOvQCy5TiK/8IydVByvkP8W12KLvBQAAAJVJREFUGBmdwUUCglAABNBBREDA7u7u7pz7n0ngG7hx4Xv4Q7xSb+rQ2ggZGoR0iaR/2FFx4HYJR5auvjHAmfTJsGUoKCr0C8luOZUvUlCB03FHR65AVwPAPjCnlw9AaMEvCdjGPXpF4agp/AhocATpkYRLH034EsPLyqLgj0CYri0KUhgu2eRTq4q3a/Bu3qTNDL88ANGwLQCiOPGPAAAAAElFTkSuQmCC');
-    }
-    /*Icon Size*/
-    #tweettext, .tweetable:after {
-        background-position: center;
-        background-size: 16px;
-        height: 16px;
-        width: 16px;
-    }
-    /*Selection Tweet Icon*/
-    #tweettext {
-        background-color: rgba(0, 172, 237, 1.0);
-        border: 8px solid rgba(0, 172, 237, 1.0);
-        border-radius: 19px;
-        -webkit-box-sizing: content-box;
-        -moz-box-sizing: content-box;
-        box-sizing: content-box;
-    }
-    /*Pre Defined Tweet Text*/
-    .tweetable {
-        background-color: #eaeaea;
-        padding: 1px 0 1px 3px;
-        text-decoration: none;
-        cursor: pointer;
-    }
-    .tweetable:after {
-        content:"";
-        display: inline-block;
-        vertical-align: top;
-        margin-top: 3px;
-        margin-bottom: 3px;
-        margin-left: 5px;
-        margin-right: 3px;
-    }
-    .tweetable:hover {
-        background-color: rgba(0, 172, 237, 0.7);
-        color: #fff!important;
-    }
-
-    </style>
-    <?php }
-}
-add_action('wp_head','cap_tweet_highlight_style');
