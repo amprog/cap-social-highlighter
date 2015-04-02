@@ -26,58 +26,7 @@ add_action( 'wp_enqueue_scripts', 'cap_tweet_highlight_script' );
 function cap_selection_share_callback() {
     if ( is_singular() ) {
         ?>
-        <span id="share-selection"><i class="mdi mdi-twitter"></i> <i class="mdi mdi-facebook"></i></span>
-        <script>
-        jQuery(document).ready(function(){
-            appId = jQuery('meta[property="fb:app_id"]').attr("content") || jQuery('meta[property="fb:app_id"]').attr("value");
-            url2share = jQuery('meta[property="og:url"]').attr("content") || jQuery('meta[property="og:url"]').attr("value") || window.location.href;
-
-            smart_truncate = function(str, n){
-                if (!str || !str.length) return str;
-                var toLong = str.length>n,
-                    s_ = toLong ? str.substr(0,n-1) : str;
-                s_ = toLong ? s_.substr(0,s_.lastIndexOf(' ')) : s_;
-                return  toLong ? s_ +'...' : s_;
-            };
-
-            jQuery(".entry-content p:not(.wide-paragraph)").selectionSharer();
-
-            jQuery("#share-selection").appendTo("blockquote p, .shareable-text");
-            jQuery("blockquote p, .shareable-text").each(function(){
-
-                jQuery(this).find(".mdi-twitter").click(function() {
-
-                    var text = "“"+smart_truncate(jQuery(this).closest("p").text(), 114)+"”";
-                    var url = 'http://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&related='+self.relatedTwitterAccounts+'&url='+encodeURIComponent(window.location.href);
-
-                    var w = 640, h=440;
-                    var left = (screen.width/2)-(w/2);
-                    var top = (screen.height/2)-(h/2)-100;
-                    window.open(url, "share_twitter", 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
-                });
-
-                jQuery(this).find(".mdi-facebook").click(function() {
-
-                    var text = jQuery(this).closest("p").text();
-                    var url = 'https://www.facebook.com/dialog/feed?app_id='+appId+'&display=page&name='+encodeURIComponent(text)+'&link='+encodeURIComponent(url2share)+'&redirect_uri='+encodeURIComponent(url2share);
-
-                    var w = 640, h=440;
-                    var left = (screen.width/2)-(w/2);
-                    var top = (screen.height/2)-(h/2)-100;
-                    window.open(url, "share_facebook", 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
-                });
-
-            });
-
-            jQuery("#lasso--edit").click(function(){
-                jQuery(".entry-content p").each(function(){
-                    if ( jQuery(this).hasClass( "selectionShareable" ) ) {
-                        jQuery(this).removeAttr("class");
-                    }
-                });
-            });
-        });
-        </script>
+        <span class="share-selection"><i class="share-twitter"></i> <i class="share-facebook"></i></span>
         <?php
     }
 }
