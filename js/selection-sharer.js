@@ -241,6 +241,10 @@ jQuery(document).ready(function(){
     // Facebook Content URL
     url2share = jQuery('meta[property="og:url"]').attr("content") || jQuery('meta[property="og:url"]').attr("value") || window.location.href;
 
+    if (appId && url2share){
+        jQuery(".share-facebook").css('display','inline-block');
+    }
+
     smart_truncate = function(str, n){
         if (!str || !str.length) return str;
         var toLong = str.length>n,
