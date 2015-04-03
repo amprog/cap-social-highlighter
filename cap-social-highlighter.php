@@ -7,7 +7,7 @@
 * Author URI: http://sethrubenstein.info
 * License: GPL2
 */
-function cap_tweet_highlight_script() {
+function cap_shareable_scripts_styles() {
     // // Only call cap-tweet-highlight if a twitter username is set and were on a single post page.
     if ( is_singular() ) {
         $handle = 'jquery';
@@ -21,22 +21,33 @@ function cap_tweet_highlight_script() {
         wp_enqueue_script( 'cap-social-sharer' );
     }
 }
-add_action( 'wp_enqueue_scripts', 'cap_tweet_highlight_script' );
+add_action( 'wp_enqueue_scripts', 'cap_shareable_scripts_styles' );
 
-function cap_selection_share_callback() {
+function cap_shareable_callback() {
     if ( is_singular() ) {
         ?>
         <span class="share-selection"><i class="share-twitter"></i> <i class="share-facebook"></i></span>
+        <script>
+            jQuery(document).ready(function(){
+                <?php if (has_filter('cap_tweet_highlight_class')) {
+                    echo 'jQuery("'.apply_filters('cap_tweet_highlight_class', $class).'").selectionSharer();';
+                } else {
+                    // Default to .entry-content p which if we're creating the theme should be mostly everything.
+                    echo 'jQuery(".entry-content p:not(.wide-paragraph)").selectionSharer();';
+                }
+                ?>
+            });
+        </script>
         <?php
     }
 }
-add_action('wp_footer','cap_selection_share_callback', 500);
+add_action('wp_footer','cap_shareable_callback', 500);
 
-function cap_tweet_highlight_shortcode( $atts , $content = null ) {
-    // Use shortcode [tweet-text]Your text here[/tweet-text]
+function cap_shareable_shortcode( $atts , $content = null ) {
+    // Use shortcode [shareable]Your text here[/shareable]
     $markup = '<span class="shareable-text">';
     $markup .= $content;
     $markup .= '</span>';
     return $markup;
 }
-add_shortcode( 'tweet-text', 'cap_tweet_highlight_shortcode' );
+add_shortcode( 'shareable', 'cap_shareable_shortcode' );

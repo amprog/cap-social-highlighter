@@ -249,10 +249,6 @@ jQuery(document).ready(function(){
         return  toLong ? s_ +'...' : s_;
     };
 
-    // @todo count paragraphs and if more than one compile them.
-
-    jQuery(".entry-content p:not(.wide-paragraph)").selectionSharer();
-
     jQuery(".share-selection").appendTo("blockquote p, .shareable-text");
     jQuery("blockquote p, .shareable-text").each(function(){
 
