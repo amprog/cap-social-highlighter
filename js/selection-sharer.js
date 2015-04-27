@@ -152,7 +152,7 @@
     this.shareFacebook = function(e) {
       e.preventDefault();
       var text = self.htmlSelection.replace(/<p[^>]*>/ig,'\n').replace(/<\/p>|  /ig,'').trim();
-      var url = 'https://www.facebook.com/dialog/feed?app_id='+self.appId+'&display=page&name='+encodeURIComponent(text)+'&link='+encodeURIComponent(self.url2share)+'&redirect_uri='+encodeURIComponent(self.url2share);
+      var url = 'https://www.facebook.com/dialog/share?app_id='+self.appId+'&display=popup&name='+encodeURIComponent(text)+'&href='+encodeURIComponent(self.url2share)+'&redirect_uri='+encodeURIComponent(self.url2share);
       window.location.href=url;
     };
 
