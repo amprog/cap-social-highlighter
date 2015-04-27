@@ -25,6 +25,7 @@
 
     this.appId = $('meta[property="fb:app_id"]').attr("content") || $('meta[property="fb:app_id"]').attr("value");
     this.url2share = $('meta[property="og:url"]').attr("content") || $('meta[property="og:url"]').attr("value") || window.location.href;
+    this.twitterurl2share = $('meta[property="bitly:url"]').attr("content") || $('meta[property="bitly:url"]').attr("value") || window.location.href;
 
     this.getSelectionText = function(sel) {
         var html = "", text = "";
@@ -134,7 +135,7 @@
       e.preventDefault();
 
       var text = "“"+self.smart_truncate(self.textSelection.trim(), 114)+"”";
-      var url = 'http://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&related='+self.relatedTwitterAccounts+'&url='+encodeURIComponent(self.url2share);
+      var url = 'http://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&related='+self.relatedTwitterAccounts+'&url='+encodeURIComponent(self.twitterurl2share);
 
       // We only show the via @twitter:site if we have enough room
       if(self.viaTwitterAccount && text.length < (120-6-self.viaTwitterAccount.length))
