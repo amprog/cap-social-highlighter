@@ -33,7 +33,7 @@ function cap_shareable_callback() {
                     echo 'jQuery("'.apply_filters('cap_tweet_highlight_class', $class).'").selectionSharer();';
                 } else {
                     // Default to .entry-content p which if we're creating the theme should be mostly everything.
-                    echo 'jQuery(".entry-content p:not(.wide-paragraph)").selectionSharer();';
+                    echo 'jQuery("body:not(.lasso-editing) .entry-content section > p:not(.wide-paragraph)").selectionSharer();';
                 }
                 ?>
             });
