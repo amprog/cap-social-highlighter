@@ -26,7 +26,7 @@ add_action( 'wp_enqueue_scripts', 'cap_shareable_scripts_styles' );
 function cap_shareable_callback() {
     if ( is_singular() ) {
         ?>
-        <span class="share-selection"><i class="share-twitter"></i> <i class="share-facebook"></i></span>
+        <span class="share-selection"><i class="share-twitter"></i> <i class="share-facebook" style="display: none;"></i></span>
         <script>
             jQuery(document).ready(function(){
                 <?php if (has_filter('cap_tweet_highlight_class')) {
