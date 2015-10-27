@@ -24,7 +24,7 @@ function cap_shareable_scripts_styles() {
 add_action( 'wp_enqueue_scripts', 'cap_shareable_scripts_styles' );
 
 function cap_shareable_callback() {
-    if ( is_singular() ) {
+    if ( is_singular(array('post', 'reports', 'press')) ) {
         ?>
         <span class="share-selection"><i class="share-twitter"></i> <i class="share-facebook" style="display: none;"></i></span>
         <script>
