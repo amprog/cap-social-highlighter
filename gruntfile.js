@@ -17,7 +17,7 @@ module.exports = function(grunt) {
         uglify: {
             my_target: {
                 files: {
-                    'js/min/cap-social-sharer.min.js': ['js/selection-sharer.js','js/cap-social-sharer.js']
+                    'js/min/cap-social-sharer.min.js': ['js/selection-sharer.js']
                 }
             }
         },

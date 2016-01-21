@@ -24,26 +24,14 @@ function cap_shareable_scripts_styles() {
 add_action( 'wp_enqueue_scripts', 'cap_shareable_scripts_styles' );
 
 function cap_shareable_callback() {
-    if ( is_singular() ) {
-        ?>
-        <script>
-            jQuery(document).ready(function(){
-                <?php if (has_filter('cap_tweet_highlight_class')) {
-                    echo 'jQuery("'.apply_filters('cap_tweet_highlight_class', $class).'").selectionSharer();';
-                } else {
-                    // Default to .entry-content p which if we're creating the theme should be mostly everything.
-                    echo 'jQuery("body:not(.lasso-editing) .entry-content section > p:not(.wide-paragraph), body:not(.lasso-editing) .entry-content section > .aesop-content-component p").selectionSharer();';
-                }
-                ?>
-            });
-        </script>
-        <?php
+    if ( is_singular() && has_filter('cap_tweet_highlight_class') ) {
+        echo '<script>jQuery(document).ready(function(){jQuery("'.apply_filters('cap_tweet_highlight_class', $class).'").selectionSharer();});</script>';
     }
 }
 add_action('wp_footer','cap_shareable_callback', 500);
 
+// Use shortcode [shareable]Your text here[/shareable]
 function cap_shareable_shortcode( $atts , $content = null ) {
-    // Use shortcode [shareable]Your text here[/shareable]
     $markup = '<span class="shareable-text">';
     $markup .= $content;
     $markup .= '</span>';

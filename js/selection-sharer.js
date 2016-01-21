@@ -253,8 +253,7 @@ jQuery(document).ready(function(){
         s_ = toLong ? s_.substr(0,s_.lastIndexOf(' ')) : s_;
         return  toLong ? s_ +'...' : s_;
     };
-
-    jQuery(".share-selection").appendTo("blockquote p, .shareable-text");
+    jQuery('<span class="share-selection"><i class="share-twitter"></i> <i class="share-facebook" style="display: none;"></i></span>').appendTo("blockquote p, .shareable-text");
     jQuery("blockquote p, .shareable-text").each(function(){
 
         jQuery(this).find(".share-twitter").click(function() {
