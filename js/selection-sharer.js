@@ -193,6 +193,8 @@
       if(typeof elements == 'string') elements = $(elements);
       self.$elements = elements instanceof $ ? elements : $(elements);
       self.$elements.mouseup(self.show).mousedown(self.hide).addClass("selectionShareable");
+        //if clicking anywhere within the main page content any visible twitter popover will be hidden
+        $(".entry-content").mousedown(self.hide).addClass("selectionShareable");
 
     };
 

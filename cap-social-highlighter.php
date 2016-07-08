@@ -29,8 +29,10 @@ function cap_shareable_callback() {
         <span class="share-selection"><i class="share-twitter"></i> <i class="share-facebook" style="display: none;"></i></span>
         <script>
             jQuery(document).ready(function(){
-                <?php if (has_filter('cap_tweet_highlight_class')) {
-                    echo 'jQuery("'.apply_filters('cap_tweet_highlight_class', $class).'").selectionSharer();';
+                <?php if (has_filter('cap_tweet_highlight_class') && has_filter('cap_tweet_highlight_class_for_lists')) {
+                echo 'jQuery("'.apply_filters('cap_tweet_highlight_class', $class).'").selectionSharer();';
+                //make list items in content shareable
+                echo 'jQuery("'.apply_filters('cap_tweet_highlight_class_for_lists', $class).'").selectionSharer();';
                 } else {
                     // Default to .entry-content p which if we're creating the theme should be mostly everything.
                     echo 'jQuery("body:not(.lasso-editing) .entry-content section > p:not(.wide-paragraph), body:not(.lasso-editing) .entry-content section > .aesop-content-component p").selectionSharer();';
