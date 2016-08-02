@@ -160,7 +160,6 @@ blockquote .share-selection {
   background-size: 16px;
   position: relative;
   top: 1px;
-  display: none;
 }
 .share-selection .share-facebook {
   opacity: 0.4;
