@@ -1,0 +1,8 @@
+{
+  "name": "amprog/cap-social-highlighter",
+  "type": "wordpress-plugin",
+  "require": {
+    "php": ">=5.6",
+    "composer/installers": "~1.0.6"
+  }
+}
